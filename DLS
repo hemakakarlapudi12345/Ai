@@ -1,0 +1,31 @@
+class Graph:
+    def __init__(self):
+        self.graph = defaultdict(list)
+    def add_edge(self, u, v, weight):
+        self.graph[u].append((v, weight))
+    def dls(self, node, depth, visited=None): #recursive function
+        if visited is None:
+            visited = set()
+        if depth < 0: #stop recursion
+            return
+        print(f"Visiting Node: {node}, Depth: {depth}")
+        visited.add(node) #marks the node as visited
+        if depth == 0:
+            return 
+        for neighbor, _ in self.graph[node]:
+            if neighbor not in visited:
+                self.dls(neighbor, depth - 1, visited)
+graph = Graph()
+edges = [('A', 'B', 10), 
+         ('A', 'C', 15),
+         ('B', 'D', 12), 
+         ('B', 'F', 15),
+         ('D', 'F', 1), 
+         ('D', 'E', 2),
+         ('F', 'E', 5), 
+         ('C', 'E', 10)]
+for u, v, w in edges:
+    graph.add_edge(u, v, w)
+start_node = 'A'
+depth_limit = 2
+graph.dls(start_node, depth_limit)
