@@ -1,0 +1,32 @@
+class SmartAgricultureAgent:
+    def __init__(self):
+        self.ideal_conditions = {
+            "soil_moisture": (40, 70),  
+            "temperature": (20, 30),    
+            "crop_health": (80, 100),   
+            "market_demand": (50, 100)  
+        }
+    def calculate_utility(self, soil_moisture, temperature, crop_health, market_demand):
+        """Calculate a utility score based on input conditions"""
+        moisture_score = max(0, min(1, (soil_moisture - 30) / 40)) 
+        temp_score = max(0, min(1, (temperature - 15) / 15)) 
+        health_score = crop_health / 100  
+        demand_score = market_demand / 100  
+        utility_score = (0.3 * moisture_score) + (0.3 * temp_score) + (0.2 * health_score) + (0.2 * demand_score)
+        return round(utility_score, 2)
+    def advise_farmer(self, soil_moisture, temperature, crop_health, market_demand):
+        """Give farming advice based on utility score"""
+        utility = self.calculate_utility(soil_moisture, temperature, crop_health, market_demand)
+        print(f"\n Utility Score: {utility}")
+        if utility > 0.8:
+            print("Optimal conditions! Continue current practices.")
+        elif 0.5 <= utility <= 0.8:
+            print("Moderate conditions. Consider adjusting irrigation or fertilization.")
+        else:
+            print(" Poor conditions! Immediate action required: Adjust irrigation, temperature, or pest control.")
+agent = SmartAgricultureAgent()
+soil_moisture = float(input("Enter soil moisture (%): "))
+temperature = float(input("Enter temperature (°C): "))
+crop_health = float(input("Enter crop health (%): "))
+market_demand = float(input("Enter market demand (%): "))
+agent.advise_farmer(soil_moisture, temperature, crop_health, market_demand)
