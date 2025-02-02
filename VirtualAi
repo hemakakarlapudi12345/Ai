@@ -1,0 +1,61 @@
+class VirtualAssistant:
+    def __init__(self):
+        self.tasks = []
+        self.appointments = []
+    def add_task(self, task):
+        self.tasks.append(task)
+        print(f"Task added: {task}")
+    def view_tasks(self):
+        if not self.tasks:
+            print("No tasks available.")
+        else:
+            print("Your Tasks:")
+            for i, task in enumerate(self.tasks, 1):
+                print(f"{i}. {task}")
+    def remove_task(self, task_number):
+        if 1 <= task_number <= len(self.tasks):
+            removed_task = self.tasks.pop(task_number - 1)
+            print(f"Removed task: {removed_task}")
+        else:
+            print("Invalid task number!")
+    def schedule_appointment(self, date, time, description):
+        self.appointments.append((date, time, description))
+        print(f"Appointment scheduled on {date} at {time}: {description}")
+    def view_appointments(self):
+        if not self.appointments:
+            print("No appointments scheduled.")
+        else:
+            print("Your Appointments:")
+            for i, (date, time, desc) in enumerate(self.appointments, 1):
+                print(f"{i}. {date} at {time} - {desc}")
+    def search_web(self, query):
+        url = f"https://www.google.com/search?q={query}"
+        webbrowser.open(url)
+        print(f"Searching for: {query}")
+assistant = VirtualAssistant()
+while True:
+    print("\nOptions: add task, view tasks, remove task, schedule appointment, view appointments, search, exit")
+    command = input("Enter command: ").lower()
+    if command == "add task":
+        task = input("Enter task: ")
+        assistant.add_task(task)
+    elif command == "view tasks":
+        assistant.view_tasks()
+    elif command == "remove task":
+        num = int(input("Enter task number: "))
+        assistant.remove_task(num)
+    elif command == "schedule appointment":
+        date = input("Enter date (YYYY-MM-DD): ")
+        time = input("Enter time (HH:MM): ")
+        desc = input("Enter description: ")
+        assistant.schedule_appointment(date, time, desc)
+    elif command == "view appointments":
+        assistant.view_appointments()
+    elif command == "search":
+        query = input("Enter search query: ")
+        assistant.search_web(query)
+    elif command == "exit":
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid command! Try again.")
