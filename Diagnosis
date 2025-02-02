@@ -1,0 +1,31 @@
+class HealthcareDiagnosticsAgent:
+    def __init__(self):
+        self.knowledge_base = {
+            "Flu": ["fever", "cough", "sore throat", "fatigue"],
+            "Common Cold": ["sneezing", "runny nose", "sore throat", "cough"],
+            "COVID-19": ["fever", "cough", "shortness of breath", "loss of taste"],
+            "Migraine": ["headache", "nausea", "sensitivity to light"],
+            "Diabetes": ["frequent urination", "excessive thirst", "fatigue", "blurred vision"]
+        }
+    def diagnose(self, symptoms):
+        possible_conditions = []
+        for disease, disease_symptoms in self.knowledge_base.items():
+            match_count = len(set(symptoms) & set(disease_symptoms))
+            if match_count > 0:
+                possible_conditions.append((disease, match_count))
+        possible_conditions.sort(key=lambda x: x[1], reverse=True)
+        if possible_conditions:
+            print("\nPossible Diagnosis:")
+            for condition, matches in possible_conditions:
+                print(f"- {condition} (Matched {matches} symptoms)")
+        else:
+            print("\nNo clear diagnosis. Further medical tests may be needed.")
+agent = HealthcareDiagnosticsAgent()
+while True:
+    print("\nEnter patient symptoms (comma separated), or type 'exit' to quit.")
+    user_input = input("Symptoms: ").lower()
+    if user_input == "exit":
+        print("Goodbye! Stay healthy.")
+        break
+    symptoms_list = [symptom.strip() for symptom in user_input.split(",")]
+    agent.diagnose(symptoms_list)
