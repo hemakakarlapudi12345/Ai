@@ -1,0 +1,55 @@
+class Graph:
+    def __init__(self):
+        self.graph = {}
+        self.heuristic = {}
+
+    def add_edge(self, u, v, cost):
+        if u not in self.graph:
+            self.graph[u] = []
+        self.graph[u].append((v, cost))
+
+    def set_heuristic(self, h_values):
+        self.heuristic = h_values
+
+    def greedy_best_first_search(self, start, goal):
+        open_list = [(start, self.heuristic[start])]  # List of (node, heuristic) pairs
+        closed_set = set()
+        path = []
+
+        while open_list:
+            # Sort open list based on heuristic value (H(n))
+            open_list.sort(key=lambda x: x[1])  
+            current, _ = open_list.pop(0)  # Select node with smallest heuristic
+            path.append(current)
+
+            if current == goal:
+                return path  # Goal reached
+
+            closed_set.add(current)
+
+            for neighbor, _ in self.graph.get(current, []):
+                if neighbor not in closed_set and all(n[0] != neighbor for n in open_list):
+                    open_list.append((neighbor, self.heuristic[neighbor]))
+
+        return None  # No path found
+
+# Define the graph from the image
+g = Graph()
+g.add_edge('S', 'A', 3)
+g.add_edge('S', 'B', 2)
+g.add_edge('A', 'C', 4)
+g.add_edge('A', 'D', 1)
+g.add_edge('B', 'E', 3)
+g.add_edge('B', 'F', 1)
+g.add_edge('E', 'H', 5)
+g.add_edge('F', 'I', 2)
+g.add_edge('F', 'G', 3)
+
+# Set heuristic values
+heuristics = {'S': 13, 'A': 12, 'B': 4, 'C': 7, 'D': 3, 'E': 8, 'F': 2, 'H': 4, 'I': 9, 'G': 0}
+g.set_heuristic(heuristics)
+
+# Run the algorithm
+start, goal = 'S', 'G'
+path = g.greedy_best_first_search(start, goal)
+print("Greedy Best-First Search Path:", path)
