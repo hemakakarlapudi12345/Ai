@@ -1,0 +1,53 @@
+import random
+
+# Knapsack Problem Parameters
+knapsack_capacity = 50
+item_weights = [10, 20, 30, 40, 50]
+item_values = [60, 100, 120, 150, 200]
+population_size = 50
+generations = 100
+mutation_rate = 0.1
+
+def generate_chromosome():
+    return [random.randint(0, 1) for _ in range(len(item_weights))]
+
+def initialize_population():
+    return [generate_chromosome() for _ in range(population_size)]
+
+def calculate_fitness(chromosome):
+    total_value = sum(c * v for c, v in zip(chromosome, item_values))
+    total_weight = sum(c * w for c, w in zip(chromosome, item_weights))
+    return total_value if total_weight <= knapsack_capacity else 0
+
+def tournament_selection(population, k=3):
+    selected = random.sample(population, k)
+    return max(selected, key=calculate_fitness)
+
+def crossover(parent1, parent2):
+    point1, point2 = sorted(random.sample(range(len(parent1)), 2))
+    child1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    child2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+    return child1, child2
+
+def mutate(chromosome):
+    for i in range(len(chromosome)):
+        if random.random() < mutation_rate:
+            chromosome[i] = 1 - chromosome[i]
+
+def genetic_algorithm():
+    population = initialize_population()
+    for _ in range(generations):
+        new_population = []
+        while len(new_population) < population_size:
+            parent1, parent2 = tournament_selection(population), tournament_selection(population)
+            child1, child2 = crossover(parent1, parent2)
+            mutate(child1)
+            mutate(child2)
+            new_population.extend([child1, child2])
+        population = new_population[:population_size]
+    best_solution = max(population, key=calculate_fitness)
+    return best_solution, calculate_fitness(best_solution)
+
+best_solution, best_fitness = genetic_algorithm()
+print("Best Solution (Selected items):", best_solution)
+print("Best Fitness (Total value):", best_fitness)
