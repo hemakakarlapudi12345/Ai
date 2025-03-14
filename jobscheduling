@@ -1,0 +1,52 @@
+import random
+import numpy as np
+num_jobs = 6
+num_machines = 3
+population_size = 10
+num_generations = 50
+mutation_rate = 0.1
+processing_times = np.random.randint(5, 25, size=num_jobs)
+
+def generate_population(size, num_jobs, num_machines):
+    return [np.random.randint(0, num_machines, size=num_jobs).tolist() for _ in range(size)]
+
+
+def fitness(chromosome):
+    machine_loads = [0] * num_machines
+    for job, machine in enumerate(chromosome):
+        machine_loads[machine] += processing_times[job]
+    return max(machine_loads)  # Minimize the max completion time
+
+def selection(population, fitness_scores):
+    tournament = random.sample(list(zip(population, fitness_scores)), k=3)
+    return min(tournament, key=lambda x: x[1])[0]
+
+def crossover(parent1, parent2):
+    point = random.randint(1, num_jobs - 1)
+    child1 = parent1[:point] + parent2[point:]
+    child2 = parent2[:point] + parent1[point:]
+    return child1, child2
+
+
+def mutate(chromosome):
+    if random.random() < mutation_rate:
+        idx1, idx2 = random.sample(range(num_jobs), 2)
+        chromosome[idx1], chromosome[idx2] = chromosome[idx2], chromosome[idx1]
+    return chromosome
+
+population = generate_population(population_size, num_jobs, num_machines)
+for generation in range(num_generations):
+    fitness_scores = [fitness(chromosome) for chromosome in population]
+    new_population = []
+    while len(new_population) < population_size:
+        parent1 = selection(population, fitness_scores)
+        parent2 = selection(population, fitness_scores)
+        child1, child2 = crossover(parent1, parent2)
+        new_population.extend([mutate(child1), mutate(child2)])
+    population = new_population[:population_size]
+    
+
+best_chromosome = min(population, key=fitness)
+best_fitness = fitness(best_chromosome)
+print("Optimized Job Schedule:", best_chromosome)
+print("Optimal Completion Time:", best_fitness)
