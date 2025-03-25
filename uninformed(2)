@@ -1,0 +1,97 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Creating the directed graph
+G = nx.DiGraph()
+
+# Adding edges with weights
+edges = [
+    ('A', 'B', 10), ('A', 'C', 15),
+    ('B', 'D', 12), ('B', 'F', 15),
+    ('C', 'E', 10), ('D', 'E', 2),
+    ('D', 'F', 1), ('F', 'E', 5)
+]
+
+G.add_weighted_edges_from(edges)
+
+# Problem 1: Shortest Path using Dijkstra's Algorithm
+def shortest_path_dijkstra(graph, start, end):
+    path = nx.dijkstra_path(graph, start, end)
+    length = nx.dijkstra_path_length(graph, start, end)
+    return path, length
+
+path, length = shortest_path_dijkstra(G, 'A', 'E')
+print("Shortest path from A to E:", path, "with total weight:", length)
+
+# Problem 2: BFS Implementation
+def bfs(graph, start):
+    visited = []
+    queue = [start]
+    while queue:
+        node = queue.pop(0)
+        if node not in visited:
+            visited.append(node)
+            queue.extend(set(graph[node]) - set(visited))
+    return visited
+
+print("BFS Traversal from A:", bfs(G, 'A'))
+
+# Problem 3: DFS Implementation
+def dfs(graph, start, visited=None):
+    if visited is None:
+        visited = []
+    visited.append(start)
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+    return visited
+
+print("DFS Traversal from A:", dfs(G, 'A'))
+
+# Problem 4: Cycle Detection using DFS
+def has_cycle(graph):
+    try:
+        cycle = nx.find_cycle(graph, orientation='original')
+        return True, cycle
+    except nx.NetworkXNoCycle:
+        return False, []
+
+cycle_exists, cycle_path = has_cycle(G)
+print("Cycle exists in the graph:", cycle_exists)
+if cycle_exists:
+    print("Cycle Path:", cycle_path)
+
+# Problem 5: Graph Coloring with Maximum 3 Colors
+def graph_coloring(graph):
+    coloring = {}
+    available_colors = [0, 1, 2]  # Limiting to 3 colors
+    
+    for node in sorted(graph.nodes()):  # Ensuring deterministic order
+        neighbor_colors = {coloring.get(neighbor) for neighbor in graph.neighbors(node) if neighbor in coloring}
+        
+        for color in available_colors:
+            if color not in neighbor_colors:
+                coloring[node] = color
+                break
+    
+    return coloring
+
+coloring = graph_coloring(G)
+print("Graph Coloring:", coloring)
+
+# Ensuring all three colors are used
+color_usage = set(coloring.values())
+if len(color_usage) < 3:
+    for node in coloring:
+        if len(color_usage) < 3:
+            for color in range(3):
+                if color not in color_usage:
+                    coloring[node] = color
+                    color_usage.add(color)
+                    break
+
+# Visualizing the graph with colors
+color_map = ['red', 'blue', 'green']  # Only 3 colors allowed
+nodes_color = [color_map[coloring.get(node, 0)] for node in G.nodes()]
+nx.draw(G, with_labels=True, node_color=nodes_color, node_size=800, font_weight='bold', arrows=True)
+plt.show()
