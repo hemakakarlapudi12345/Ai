@@ -1,0 +1,36 @@
+import math
+def minimax(node, depth, is_maximizing, values, tree, path):
+    if node not in tree:
+        return values[node], [node]  
+    if is_maximizing:
+        best_value = -math.inf
+        best_path = []
+        for child in tree[node]:
+            val, sub_path = minimax(child, depth + 1, False, values, tree, path)
+            if val > best_value:
+                best_value = val
+                best_path = [node] + sub_path
+        return best_value, best_path
+    else:
+        best_value = math.inf
+        best_path = []
+        for child in tree[node]:
+            val, sub_path = minimax(child, depth + 1, True, values, tree, path)
+            if val < best_value:
+                best_value = val
+                best_path = [node] + sub_path
+        return best_value, best_path
+tree = {
+    'A': ['B1', 'B2', 'B3'],
+    'B1': ['C1', 'C2', 'C3'],
+    'B2': ['C4', 'C5', 'C6'],
+    'B3': ['C7', 'C8', 'C9']
+}
+values = {
+    'C1': 12, 'C2': 10, 'C3': 3,
+    'C4': 5, 'C5': 8, 'C6': 10,
+    'C7': 11, 'C8': 2, 'C9': 12
+}
+optimal_value, optimal_path = minimax('A', 0, True, values, tree, [])
+print("Optimal value determined by Minimax:", optimal_value)
+print("Optimal path:", " -> ".join(optimal_path))
