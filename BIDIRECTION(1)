@@ -1,0 +1,29 @@
+import heapq
+def bidirectional_search(graph, start, goal):
+    forward_pq = [(0, start, [])]  
+    backward_pq = [(0, goal, [])]  
+    forward_visited = {}  
+    backward_visited = {}  
+    while forward_pq and backward_pq:
+        f_cost, f_node, f_path = heapq.heappop(forward_pq)
+        if f_node in backward_visited:  # If it meets backward search
+            return f_cost + backward_visited[f_node][0], f_path + backward_visited[f_node][1][::-1]
+        forward_visited[f_node] = (f_cost, f_path)
+        f_path = f_path + [f_node]
+        for neighbor, weight in graph.get(f_node, []):
+            if neighbor not in forward_visited:
+                heapq.heappush(forward_pq, (f_cost + weight, neighbor, f_path))
+        b_cost, b_node, b_path = heapq.heappop(backward_pq)
+        if b_node in forward_visited:  # If it meets forward search
+            return forward_visited[b_node][0] + b_cost, forward_visited[b_node][1] + b_path[::-1]
+
+        backward_visited[b_node] = (b_cost, b_path)
+        b_path = b_path + [b_node]
+
+        for neighbor, weight in graph.get(b_node, []):
+            if neighbor not in backward_visited:
+                heapq.heappush(backward_pq, (b_cost + weight, neighbor, b_path))
+
+    return float("inf"), []  
+cost, path = bidirectional_search(graph, 'A', 'D')
+print(f"Bidirectional Search Path: {path},\nBidrectional Search  Cost: {cost}")
