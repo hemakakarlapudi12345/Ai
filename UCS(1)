@@ -1,0 +1,26 @@
+import heapq
+def uniform_cost_search(graph, start, goal):
+    pq = [(0, start, [])]  
+    visited = set()  
+    while pq:
+        cost, node, path = heapq.heappop(pq)  
+        if node in visited:
+            continue
+        visited.add(node)
+        path = path + [node]  
+        if node == goal:
+            return cost, path  
+        for neighbor, weight in graph.get(node, []):
+            if neighbor not in visited:
+                heapq.heappush(pq, (cost + weight, neighbor, path))
+    return float("inf"), [] 
+graph = {
+    'A': [('B', 7), ('C', 9), ('F', 14)],
+    'B': [('A', 7), ('C', 10), ('D', 15)],
+    'C': [('A', 9), ('B', 10), ('D', 11), ('E', 2), ('F', 9)],
+    'D': [('B', 15), ('C', 11), ('E', 6)],
+    'E': [('C', 2), ('D', 6), ('F', 9)],
+    'F': [('A', 14), ('C', 9), ('E', 9)]
+}
+cost, path = uniform_cost_search(graph, 'A', 'D')
+print(f"Uniform Cost Search Path: {path},\nUniform cost search Cost: {cost}")
